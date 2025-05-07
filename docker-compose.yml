@@ -4,5 +4,22 @@ services:
     build:
       context: .
       dockerfile: LoadTestPostgresRedisCache/Dockerfile
+    depends_on:       
+      - postgresdb
     ports:
       - "5678:8080"
+
+  postgresdb:
+    image: postgres:latest
+    container_name: postgrescontainer
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "1234:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
