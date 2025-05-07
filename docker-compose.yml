@@ -1,0 +1,8 @@
+services:
+  loadtestpostgresrediscache:
+    image: ${DOCKER_REGISTRY-}loadtestpostgresrediscache
+    build:
+      context: .
+      dockerfile: LoadTestPostgresRedisCache/Dockerfile
+    ports:
+      - "5678:8080"
