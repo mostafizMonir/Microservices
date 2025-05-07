@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadTestPostgresRedisCache"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsLetter.API", "NewsLetter.API\NewsLetter.API.csproj", "{22F0641F-7648-4F6F-BC1C-F1E1BD2D3C5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsLetter.Reporting.API", "NewsLetter.Reporting.API\NewsLetter.Reporting.API.csproj", "{E28B2EC6-8CF6-4091-B7E9-35CDBD91CFE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{3B2AB06C-A7F3-4240-8B05-2F68442196C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +27,18 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22F0641F-7648-4F6F-BC1C-F1E1BD2D3C5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22F0641F-7648-4F6F-BC1C-F1E1BD2D3C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22F0641F-7648-4F6F-BC1C-F1E1BD2D3C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22F0641F-7648-4F6F-BC1C-F1E1BD2D3C5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E28B2EC6-8CF6-4091-B7E9-35CDBD91CFE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E28B2EC6-8CF6-4091-B7E9-35CDBD91CFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E28B2EC6-8CF6-4091-B7E9-35CDBD91CFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E28B2EC6-8CF6-4091-B7E9-35CDBD91CFE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B2AB06C-A7F3-4240-8B05-2F68442196C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2AB06C-A7F3-4240-8B05-2F68442196C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2AB06C-A7F3-4240-8B05-2F68442196C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B2AB06C-A7F3-4240-8B05-2F68442196C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

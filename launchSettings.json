@@ -4,7 +4,9 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "loadtestpostgresrediscache": "StartDebugging"
+        "loadtestpostgresrediscache": "StartDebugging",
+        "newsletter.api": "StartDebugging",
+        "newsletter.reporting.api": "StartDebugging"
       }
     }
   }

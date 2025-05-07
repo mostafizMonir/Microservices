@@ -7,7 +7,7 @@ services:
     depends_on:       
       - postgresdb
     ports:
-      - "5678:8080"
+      - "5003:8080"
 
   postgresdb:
     image: postgres:latest
@@ -21,5 +21,34 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  newsletter.api:
+    image: ${DOCKER_REGISTRY-}newsletterapi
+    build:
+      context: .
+      dockerfile: NewsLetter.API/Dockerfile
+    ports:
+      - "5001:8080"
+
+  newsletter.reporting.api:
+    image: ${DOCKER_REGISTRY-}newsletterreportingapi
+    build:
+      context: .
+      dockerfile: NewsLetter.Reporting.API/Dockerfile
+    ports:
+       - "5002:8080"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP protocol (for apps)
+      - "15672:15672"  # HTTP UI (management console)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 volumes:
   pgdata:
+  rabbitmq_data:
+
+
