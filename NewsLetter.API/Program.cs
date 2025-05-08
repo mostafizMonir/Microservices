@@ -1,10 +1,13 @@
+using MassTransit;
 using NewsLetter.API;
+using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplicationServices(builder.Configuration); // Your DI extension method
 
@@ -14,9 +17,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+app.MapPost("/publish", async (IPublishEndpoint publishEndpoint) =>
+{
+    await publishEndpoint.Publish(new ArticleCreated("Hello from ASP.NET Core .NET 9!"));
+    return Results.Ok("Message published to RabbitMQ.");
+});
 
 var summaries = new[]
 {
