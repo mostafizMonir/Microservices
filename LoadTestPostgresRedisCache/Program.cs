@@ -1,3 +1,8 @@
+using LoadTestPostgresRedisCache.Data;
+using LoadTestPostgresRedisCache.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +11,17 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("Postgres")
+    ));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = $"{builder.Configuration["Redis:Host"]}:{builder.Configuration["Redis:Port"]}";
+    options.InstanceName = "MyApp_";
+});
 
 var app = builder.Build();
 
@@ -18,6 +34,31 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapGet("/cache-set", async (IDistributedCache cache) =>
+{
+    await cache.SetStringAsync("key", "Hello from Redis!");
+    return Results.Ok("Cached");
+});
+
+app.MapGet("/cache-get", async (IDistributedCache cache) =>
+{
+    var value = await cache.GetStringAsync("key");
+    return Results.Ok(value ?? "No value found");
+});
+
+app.MapPost("/todo", async (AppDbContext db, Todo todo) =>
+{
+    db.Todos.Add(todo);
+    await db.SaveChangesAsync();
+    return Results.Created($"/todo/{todo.Id}", todo);
+});
+
+app.MapGet("/todo", async (AppDbContext db) =>
+{
+    var todos = await db.Todos.ToListAsync();
+    return Results.Ok(todos);
+});
 
 var summaries = new[]
 {
