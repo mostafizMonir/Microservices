@@ -28,7 +28,8 @@ services:
       context: .
       dockerfile: NewsLetter.API/Dockerfile
     ports:
-      - "5001:8080"
+      - 5000:8080
+      - 5001:8081
     depends_on:       
       - postgresdb
       - rabbitmq

@@ -2,10 +2,10 @@
 
 public class ArticleCreated
 {
-    private readonly string _helloFromAspNetCoreNet;
+    public string HelloFromAspNetCoreNet { get; set; }
 
     public ArticleCreated(string helloFromAspNetCoreNet)
     {
-        _helloFromAspNetCoreNet = helloFromAspNetCoreNet;
+        HelloFromAspNetCoreNet = helloFromAspNetCoreNet;
     }
 }
