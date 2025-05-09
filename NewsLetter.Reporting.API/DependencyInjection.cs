@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using NewsLetter.Reporting.API.Consumers;
 
 namespace NewsLetter.Reporting.API;
 
@@ -12,7 +13,7 @@ public static class DependencyInjection
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-                // busConfigurator.AddConsumer<CurrentTimeConsumer>();
+                 busConfigurator.AddConsumer<ArticleCreatedConsumer>();
                 // busConfigurator.AddConsumer<CurrentTimeConsumerV2>();
 
                 busConfigurator.UsingRabbitMq((context, config) =>
