@@ -1,3 +1,5 @@
+using Webhooks.Api.Models;
+using Webhooks.Api.Interfaces;
 using Webhooks.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<InMemoryOrderRepository>();
+builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
+builder.Services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
 
 var app = builder.Build();
 
@@ -21,6 +25,41 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository orderRepository) =>
+{
+    var order = new Order
+    {
+        Id = Guid.NewGuid(),
+        CustomerName = request.CustomerName,
+        Amount = request.Amount,
+        CreatedAt = DateTime.UtcNow
+    };
+    orderRepository?.Add(order);
+    return Results.Created($"/orders/{order.Id}", order);
+}).WithTags("Orders");
+
+app.MapGet("/orders",(InMemoryOrderRepository repsitory)=>{
+    var orders = repsitory.GetAll();
+    return Results.Ok(orders);
+}).WithTags("Orders");
+
+app.MapPost("/webhooks/subscription", async (CreateSubscriptionRequest request, 
+        InMemorySubscriptionRepository repository) =>
+{
+    var subscription = new Subscription()
+    {
+        Id = Guid.NewGuid(),
+        Url = request.Url,
+        EventType = request.EventType,
+        CreatedAt = DateTime.UtcNow,
+    };
+
+    repository.Add(subscription);
+    return Results.Created($"/webhooks/subscription/{subscription.Id}", subscription);
+})
+.WithName("CreateSubscription")
+.WithOpenApi();
 
 var summaries = new[]
 {
