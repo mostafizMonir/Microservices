@@ -1,6 +1,7 @@
 using Webhooks.Api.Models;
 using Webhooks.Api.Interfaces;
 using Webhooks.Api.Repositories;
+using Webhooks.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<InMemoryOrderRepository>();
 builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
 builder.Services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
+builder.Services.AddHttpClient<WebhookDispatcher>();
 
 var app = builder.Build();
 
