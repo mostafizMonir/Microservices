@@ -6,7 +6,8 @@
       "serviceActions": {
         "loadtestpostgresrediscache": "StartDebugging",
         "newsletter.api": "StartDebugging",
-        "newsletter.reporting.api": "StartDebugging"
+        "newsletter.reporting.api": "StartDebugging",
+        "webhooks.api": "StartDebugging"
       }
     }
   }

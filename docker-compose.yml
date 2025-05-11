@@ -67,9 +67,16 @@ services:
     volumes:
       - redis_data:/data
 
+  webhooks.api:
+    image: ${DOCKER_REGISTRY-}webhooksapi
+    build:
+      context: .
+      dockerfile: Webhooks.Api/Dockerfile
+
 volumes:
   pgdata:
   rabbitmq_data:
   redis_data:
+
 
 
