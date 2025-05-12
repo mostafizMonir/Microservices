@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository orderRepository) =>
+app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository orderRepository, WebhookDispatcher dispatcher) =>
 {
     var order = new Order
     {
@@ -38,6 +38,9 @@ app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository ord
         CreatedAt = DateTime.UtcNow
     };
     orderRepository?.Add(order);
+
+    dispatcher.DispatchAsync("order.created", order); 
+
     return Results.Created($"/orders/{order.Id}", order);
 }).WithTags("Orders");
 
