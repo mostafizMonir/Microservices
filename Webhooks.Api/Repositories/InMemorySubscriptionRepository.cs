@@ -3,7 +3,7 @@ using Webhooks.Api.Interfaces;
 
 namespace Webhooks.Api.Repositories;
 
-public class InMemorySubscriptionRepository : ISubscriptionRepository
+public class InMemorySubscriptionRepository //: ISubscriptionRepository
 {
     private List<Subscription> _subscriptions;
 
@@ -25,7 +25,7 @@ public class InMemorySubscriptionRepository : ISubscriptionRepository
 
     public void Update(Subscription subscription)
     {
-        if (_subscriptions == null) return;
+        if (_subscriptions == null) { return;}
         
         var index = _subscriptions.FindIndex(s => s.Id == subscription.Id);
         if (index != -1)
@@ -36,7 +36,7 @@ public class InMemorySubscriptionRepository : ISubscriptionRepository
 
     public void Delete(Guid id)
     {
-        if (_subscriptions == null) return;
+        if (_subscriptions == null) {return;}
         
         var subscription = _subscriptions.FirstOrDefault(s => s.Id == id);
         if (subscription != null)

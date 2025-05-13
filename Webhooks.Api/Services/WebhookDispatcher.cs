@@ -1,18 +1,19 @@
 using System.Net.Http.Json;
 using Webhooks.Api.Models;
 using Webhooks.Api.Interfaces;
+using Webhooks.Api.Repositories;
 
 namespace Webhooks.Api.Services;
 
 public class WebhookDispatcher
 {
     private readonly HttpClient _httpClient;
-    private readonly ISubscriptionRepository _subscriptionRepository;
+    private readonly InMemorySubscriptionRepository _subscriptionRepository;
     private readonly ILogger<WebhookDispatcher> _logger;
 
     public WebhookDispatcher(
         HttpClient httpClient,
-        ISubscriptionRepository subscriptionRepository,
+        InMemorySubscriptionRepository subscriptionRepository,
         ILogger<WebhookDispatcher> logger)
     {
         _httpClient = httpClient;
@@ -23,7 +24,7 @@ public class WebhookDispatcher
     public async Task DispatchAsync(string eventType, object payload)
     {
         var subscriptions = _subscriptionRepository.GetAll()
-            .Where(s => s.EventType == eventType && s.IsActive)
+            .Where(s => s.EventType == eventType)
             .ToList();
 
         foreach (var subscription in subscriptions)

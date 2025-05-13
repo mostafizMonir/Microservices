@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<InMemoryOrderRepository>();
 builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
-builder.Services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
+builder.Services.AddSingleton<InMemorySubscriptionRepository>();
 builder.Services.AddHttpClient<WebhookDispatcher>();
 
 var app = builder.Build();
@@ -49,7 +49,7 @@ app.MapGet("/orders",(InMemoryOrderRepository repsitory)=>{
     return Results.Ok(orders);
 }).WithTags("Orders");
 
-app.MapPost("/webhooks/subscription", async (CreateSubscriptionRequest request, 
+app.MapPost("/webhooks/subscriptions", async (CreateSubscriptionRequest request, 
         InMemorySubscriptionRepository repository) =>
 {
     var subscription = new Subscription()
