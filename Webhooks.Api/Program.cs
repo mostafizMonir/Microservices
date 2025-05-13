@@ -12,7 +12,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<InMemoryOrderRepository>();
-builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
 builder.Services.AddSingleton<InMemorySubscriptionRepository>();
 builder.Services.AddHttpClient<WebhookDispatcher>();
 
