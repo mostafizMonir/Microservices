@@ -1,3 +1,5 @@
+using Webhooks.Api;
+using Webhooks.Api.Data;
 using Webhooks.Api.Models;
 using Webhooks.Api.Interfaces;
 using Webhooks.Api.Repositories;
@@ -10,11 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<InMemoryOrderRepository>();
-builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
-builder.Services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
-builder.Services.AddHttpClient<WebhookDispatcher>();
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -28,7 +26,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository orderRepository, WebhookDispatcher dispatcher) =>
+app.MapPost("/orders", async (CreatedOrderRequest request, ApplicationDbContext dbContext, WebhookDispatcher dispatcher) =>
 {
     var order = new Order
     {
@@ -37,7 +35,8 @@ app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository ord
         Amount = request.Amount,
         CreatedAt = DateTime.UtcNow
     };
-    orderRepository?.Add(order);
+    dbContext.Orders.Add(order);
+    await dbContext.SaveChangesAsync();
 
     dispatcher.DispatchAsync("order.created", order); 
 
@@ -50,7 +49,7 @@ app.MapGet("/orders",(InMemoryOrderRepository repsitory)=>{
 }).WithTags("Orders");
 
 app.MapPost("/webhooks/subscription", async (CreateSubscriptionRequest request, 
-        InMemorySubscriptionRepository repository) =>
+        ApplicationDbContext dbContext) =>
 {
     var subscription = new Subscription()
     {
@@ -60,7 +59,8 @@ app.MapPost("/webhooks/subscription", async (CreateSubscriptionRequest request,
         CreatedAt = DateTime.UtcNow,
     };
 
-    repository.Add(subscription);
+    dbContext.Subscriptions.Add(subscription);
+    await dbContext.SaveChangesAsync();
     return Results.Created($"/webhooks/subscription/{subscription.Id}", subscription);
 })
 .WithName("CreateSubscription")
