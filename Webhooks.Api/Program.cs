@@ -14,6 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
 
+builder.Services.AddSingleton<InMemoryOrderRepository>();
+builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
+builder.Services.AddSingleton<InMemorySubscriptionRepository>();
+builder.Services.AddHttpClient<WebhookDispatcher>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,8 +53,8 @@ app.MapGet("/orders",(InMemoryOrderRepository repsitory)=>{
     return Results.Ok(orders);
 }).WithTags("Orders");
 
-app.MapPost("/webhooks/subscription", async (CreateSubscriptionRequest request, 
-        ApplicationDbContext dbContext) =>
+app.MapPost("/webhooks/subscriptions", async (CreateSubscriptionRequest request, 
+        InMemorySubscriptionRepository repository) =>
 {
     var subscription = new Subscription()
     {
