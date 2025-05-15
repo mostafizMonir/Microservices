@@ -1,7 +1,10 @@
+using Webhooks.Api;
+using Webhooks.Api.Data;
 using Webhooks.Api.Models;
 using Webhooks.Api.Interfaces;
 using Webhooks.Api.Repositories;
 using Webhooks.Api.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +13,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddApplicationServices(builder.Configuration);
 
 builder.Services.AddSingleton<InMemoryOrderRepository>();
 builder.Services.AddSingleton<InMemorySubscriptionRepository>();
 builder.Services.AddHttpClient<WebhookDispatcher>();
 
 var app = builder.Build();
+
+// Apply migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -27,7 +38,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository orderRepository, WebhookDispatcher dispatcher) =>
+app.MapPost("/orders", async (CreatedOrderRequest request, IRepository<Order> repository, WebhookDispatcher dispatcher) =>
 {
     var order = new Order
     {
@@ -36,9 +47,11 @@ app.MapPost("/orders", (CreatedOrderRequest request, InMemoryOrderRepository ord
         Amount = request.Amount,
         CreatedAt = DateTime.UtcNow
     };
-    orderRepository?.Add(order);
+    await repository.AddAsync(order);
+    await repository.SaveChangesAsync();
 
-    dispatcher.DispatchAsync("order.created", order); 
+    await dispatcher.DispatchAsync("order.created", order); 
+
 
     return Results.Created($"/orders/{order.Id}", order);
 }).WithTags("Orders");
@@ -49,7 +62,7 @@ app.MapGet("/orders",(InMemoryOrderRepository repsitory)=>{
 }).WithTags("Orders");
 
 app.MapPost("/webhooks/subscriptions", async (CreateSubscriptionRequest request, 
-        InMemorySubscriptionRepository repository) =>
+        IRepository<Subscription> repository) =>
 {
     var subscription = new Subscription()
     {
@@ -59,7 +72,8 @@ app.MapPost("/webhooks/subscriptions", async (CreateSubscriptionRequest request,
         CreatedAt = DateTime.UtcNow,
     };
 
-    repository.Add(subscription);
+   await repository.AddAsync(subscription);
+    await repository.SaveChangesAsync();
     return Results.Created($"/webhooks/subscription/{subscription.Id}", subscription);
 })
 .WithName("CreateSubscription")

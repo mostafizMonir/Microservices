@@ -8,12 +8,12 @@ namespace Webhooks.Api.Services;
 public class WebhookDispatcher
 {
     private readonly HttpClient _httpClient;
-    private readonly InMemorySubscriptionRepository _subscriptionRepository;
+    private readonly IRepository<Subscription> _subscriptionRepository;
     private readonly ILogger<WebhookDispatcher> _logger;
 
     public WebhookDispatcher(
         HttpClient httpClient,
-        InMemorySubscriptionRepository subscriptionRepository,
+        IRepository<Subscription> subscriptionRepository,
         ILogger<WebhookDispatcher> logger)
     {
         _httpClient = httpClient;
@@ -23,8 +23,8 @@ public class WebhookDispatcher
 
     public async Task DispatchAsync(string eventType, object payload)
     {
-        var subscriptions = _subscriptionRepository.GetAll()
-            .Where(s => s.EventType == eventType)
+        var subscriptions = (await _subscriptionRepository.GetAllAsync())
+            .Where(s => s.EventType == eventType )
             .ToList();
 
         foreach (var subscription in subscriptions)
