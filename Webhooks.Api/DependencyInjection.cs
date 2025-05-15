@@ -7,6 +7,8 @@ using Webhooks.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Npgsql;
+using MassTransit;
+using Webhooks.Api.Consumers;
 
 namespace Webhooks.Api;
 
@@ -24,8 +26,31 @@ public static class DependencyInjection
         // Register other services
         services.AddSingleton<InMemoryOrderRepository>();
         services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
-       // services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
         services.AddHttpClient<WebhookDispatcher>();
+
+        // Add MassTransit with RabbitMQ
+        services.AddMassTransit(x =>
+        {
+            // Register consumers
+            x.AddConsumer<WebhookEventConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+
+                // Configure the consumer
+                cfg.ReceiveEndpoint("webhook-events", e =>
+                {
+                    e.ConfigureConsumer<WebhookEventConsumer>(context);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         return services;
     }

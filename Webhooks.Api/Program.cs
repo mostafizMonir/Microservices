@@ -5,6 +5,7 @@ using Webhooks.Api.Interfaces;
 using Webhooks.Api.Repositories;
 using Webhooks.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/orders", async (CreatedOrderRequest request, IRepository<Order> repository, WebhookDispatcher dispatcher) =>
+app.MapPost("/orders", async (CreatedOrderRequest request, IRepository<Order> repository, WebhookDispatcher dispatcher, 
+    IPublishEndpoint publishEndpoint, IRepository<Subscription> subscriptionRepo) =>
 {
     var order = new Order
     {
@@ -50,8 +52,18 @@ app.MapPost("/orders", async (CreatedOrderRequest request, IRepository<Order> re
     await repository.AddAsync(order);
     await repository.SaveChangesAsync();
 
-    await dispatcher.DispatchAsync("order.created", order); 
+    // Get subscriptions for the event
+    var subscriptions = (await subscriptionRepo.GetAllAsync())
+        .Where(s => s.EventType == "order.created")
+        .ToList();
 
+    // Publish webhook event to RabbitMQ
+    await publishEndpoint.Publish(new WebhookEvent
+    {
+        EventType = "order.created",
+        Payload = order,
+        Subscriptions = subscriptions
+    });
 
     return Results.Created($"/orders/{order.Id}", order);
 }).WithTags("Orders");
