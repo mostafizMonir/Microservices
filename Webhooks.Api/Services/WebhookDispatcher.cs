@@ -24,7 +24,7 @@ public class WebhookDispatcher
     public async Task DispatchAsync(string eventType, object payload)
     {
         var subscriptions = (await _subscriptionRepository.GetAllAsync())
-            .Where(s => s.EventType == eventType && s.IsActive)
+            .Where(s => s.EventType == eventType )
             .ToList();
 
         foreach (var subscription in subscriptions)

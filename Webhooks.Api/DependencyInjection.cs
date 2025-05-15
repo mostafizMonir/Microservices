@@ -24,7 +24,7 @@ public static class DependencyInjection
         // Register other services
         services.AddSingleton<InMemoryOrderRepository>();
         services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
-        services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
+       // services.AddSingleton<ISubscriptionRepository, InMemorySubscriptionRepository>();
         services.AddHttpClient<WebhookDispatcher>();
 
         return services;

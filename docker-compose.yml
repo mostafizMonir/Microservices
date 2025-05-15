@@ -72,6 +72,11 @@ services:
     build:
       context: .
       dockerfile: Webhooks.Api/Dockerfile
+    ports:
+      - "5287:8080"
+      - "5288:8081"
+    depends_on:
+      - postgresdb
 
 volumes:
   pgdata:
