@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Webhooks.Api.Models;
 using Webhooks.Api.Interfaces;
 
@@ -13,6 +14,11 @@ public class InMemoryWebhookSubscriptionRepository : IRepository<Subscription>
         return Task.FromResult(entity);
     }
 
+    Task IRepository<Subscription>.AddAsync(Subscription entity)
+    {
+        return AddAsync(entity);
+    }
+
     public Task<IEnumerable<Subscription>> GetAllAsync()
     {
         return Task.FromResult(_subscriptions.AsEnumerable());
@@ -21,6 +27,21 @@ public class InMemoryWebhookSubscriptionRepository : IRepository<Subscription>
     public Task<Subscription> GetByIdAsync(Guid id)
     {
         return Task.FromResult(_subscriptions.FirstOrDefault(s => s.Id == id));
+    }
+
+    public Task UpdateAsync(Subscription entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(Subscription entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Subscription>> FindAsync(Expression<Func<Subscription, bool>> predicate)
+    {
+        throw new NotImplementedException();
     }
 
     public Task SaveChangesAsync()
